@@ -57,10 +57,10 @@ module VagrantPlugins
       # @return [String]
       attr_accessor :vdc_network_id
 
-      # IP allocation type
+      # IP allocation mode
       #
       # @return [String]
-      attr_accessor :ip_allocation_type
+      attr_accessor :ip_allocation_mode
 
       # IP subnet
       #

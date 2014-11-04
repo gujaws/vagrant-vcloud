@@ -70,7 +70,7 @@ module VagrantPlugins
               :start_address      => range_addresses.first,
               :end_address        => range_addresses.last,
               :fence_mode         => 'natRouted',
-              :ip_allocation_mode => 'POOL',
+              :ip_allocation_mode => cfg.ip_allocation_mode ? cfg.ip_allocation_mode : 'POOL',
               :parent_network     => cfg.vdc_network_id,
               :enable_firewall    => 'false',
               :dns1               => dns_address1,
@@ -82,7 +82,7 @@ module VagrantPlugins
             network_options = {
               :name               => 'Vagrant-vApp-Net',
               :fence_mode         => 'bridged',
-              :ip_allocation_mode => 'POOL',
+              :ip_allocation_mode => cfg.ip_allocation_mode ? cfg.ip_allocation_mode : 'POOL',
               :parent_network     => cfg.vdc_network_id
             }
 
@@ -99,7 +99,7 @@ module VagrantPlugins
               :start_address      => '10.1.1.2',
               :end_address        => '10.1.1.254',
               :fence_mode         => 'natRouted',
-              :ip_allocation_mode => 'POOL',
+              :ip_allocation_mode => cfg.ip_allocation_mode ? cfg.ip_allocation_mode : 'POOL',
               :parent_network     => cfg.vdc_network_id,
               :enable_firewall    => 'false',
               :dns1               => dns_address1,

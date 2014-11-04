@@ -798,18 +798,26 @@ module VagrantPlugins
                 }
               }
             }
-            vm_list.each do |vm_name, vm_id|
+            vm_list.each do |vm_name, vm_config|
               xml.SourcedItem {
-                xml.Source('href' => "#{@api_url}/vAppTemplate/vm-#{vm_id}", 'name' => vm_name)
+                xml.Source('href' => "#{@api_url}/vAppTemplate/vm-#{vm_config[:vm_id]}", 'name' => vm_name)
                 xml.InstantiationParams {
                   xml.NetworkConnectionSection(
                     'xmlns:ovf' => 'http://schemas.dmtf.org/ovf/envelope/1',
                     'type' => 'application/vnd.vmware.vcloud.networkConnectionSection+xml',
-                    'href' => "#{@api_url}/vAppTemplate/vm-#{vm_id}/networkConnectionSection/") {
+                    'href' => "#{@api_url}/vAppTemplate/vm-#{vm_config[:vm_id]}/networkConnectionSection/") {
                       xml['ovf'].Info 'Network config for sourced item'
                       xml.PrimaryNetworkConnectionIndex '0'
                       xml.NetworkConnection('network' => network_config[:name]) {
                         xml.NetworkConnectionIndex '0'
+			if network_config[:ip_allocation_mode] == 'MANUAL'
+				public_networks = vm_config[:config].config.vm.networks.select {
+					|n| n[0].eql? :public_network
+				}
+				network_spec = public_networks.first[1] unless public_networks.empty?
+				@logger.debug("This is our network #{public_networks.inspect}")
+				xml.IpAddress network_spec[:ip]
+			end
                         xml.IsConnected 'true'
                         xml.IpAddressAllocationMode(network_config[:ip_allocation_mode] || 'POOL')
                     }
@@ -861,18 +869,26 @@ module VagrantPlugins
             'name' => original_vapp[:name]) {
             xml.Description original_vapp[:description]
             xml.InstantiationParams {}
-            vm_list.each do |vm_name, vm_id|
+            vm_list.each do |vm_name, vm_config|
               xml.SourcedItem {
-                xml.Source('href' => "#{@api_url}/vAppTemplate/vm-#{vm_id}", 'name' => vm_name)
+                xml.Source('href' => "#{@api_url}/vAppTemplate/vm-#{vm_config[:vm_id]}", 'name' => vm_name)
                 xml.InstantiationParams {
                   xml.NetworkConnectionSection(
                     'xmlns:ovf' => 'http://schemas.dmtf.org/ovf/envelope/1',
                     'type' => 'application/vnd.vmware.vcloud.networkConnectionSection+xml',
-                    'href' => "#{@api_url}/vAppTemplate/vm-#{vm_id}/networkConnectionSection/") {
+                    'href' => "#{@api_url}/vAppTemplate/vm-#{vm_config[:vm_id]}/networkConnectionSection/") {
                       xml['ovf'].Info 'Network config for sourced item'
                       xml.PrimaryNetworkConnectionIndex '0'
                       xml.NetworkConnection('network' => network_config[:name]) {
                         xml.NetworkConnectionIndex '0'
+			if network_config[:ip_allocation_mode] == 'MANUAL'
+                                public_networks = vm_config[:config].config.vm.networks.select {
+                                        |n| n[0].eql? :public_network
+                                }
+                                network_spec = public_networks.first[1] unless public_networks.empty?
+                                @logger.debug("This is our network #{public_networks.inspect}")
+                                xml.IpAddress network_spec[:ip]
+                        end
                         xml.IsConnected 'true'
                         xml.IpAddressAllocationMode(network_config[:ip_allocation_mode] || 'POOL')
                     }

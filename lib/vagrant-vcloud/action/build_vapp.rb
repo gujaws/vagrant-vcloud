@@ -122,7 +122,7 @@ module VagrantPlugins
               "#{Socket.gethostname.downcase} using vagrant-vcloud on " +
               "#{Time.now.strftime("%B %d, %Y")}",
               {
-                vm_name => cfg.catalog_item[:vms_hash].first.last[:id]
+                vm_name => {:vm_id => cfg.catalog_item[:vms_hash].first.last[:id], :config => env[:machine]}
               },
               network_options
             )
@@ -178,7 +178,7 @@ module VagrantPlugins
             recompose = cnx.recompose_vapp_from_vm(
               env[:machine].get_vapp_id,
               {
-                vm_name => cfg.catalog_item[:vms_hash].first.last[:id]
+                vm_name => {:vm_id => cfg.catalog_item[:vms_hash].first.last[:id], :config => env[:machine]}
               },
               network_options
             )
